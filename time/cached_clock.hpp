@@ -8,7 +8,7 @@ namespace wccs::time {
     class cached_clock {
     public:
         // 可选提供当前参照时间
-        explicit cached_clock(std::chrono::milliseconds current)
+        explicit cached_clock(std::chrono::milliseconds current = std::chrono::milliseconds(0))
         : cached_(current.count())
         , steady_(std::chrono::steady_clock::now()) {
             if(cached_ == 0) {
