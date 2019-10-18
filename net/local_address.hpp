@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <cstring> // std::memcpy
 
-namespace whol {
+namespace wccs::net {
     // 获取本地内网地址
     template <int ADDRESS_FAMILY>
     class local_address {
