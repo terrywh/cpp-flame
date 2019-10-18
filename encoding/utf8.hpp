@@ -10,8 +10,9 @@ namespace wccs::encoding {
 
     class utf8 {
     public:
-        utf8(const std::locale& locale) 
-        : facet_(std::use_facet<std::codecvt<char16_t, char, mbstate_t>>(locale)) {
+        utf8(const std::locale& locale = std::locale("zh_CN.UTF-8")) 
+        : locale_(locale)
+        , facet_(std::use_facet<std::codecvt<char16_t, char, mbstate_t>>(locale_)) {
 
         }
         // 以 UTF8 编码计算字符个数
@@ -21,17 +22,20 @@ namespace wccs::encoding {
         // 以 UTF8 编码截取偏移 offset 个字符长度 length 个字符
         std::string substr(const std::string& text, std::size_t offset, std::size_t length) {
             std::mbstate_t mb {};
+            const char* begin = text.data(),
+                *end = text.data() + text.size();
             // 截取长度起点终点
             if(offset > 0) {
-                offset = facet_.length(mb, text.c_str(), text.c_str() + text.size(), offset);
+                offset = facet_.length(mb, begin, end, offset);
             }
             if(length > 0) {
-                length = facet_.length(mb, text.c_str() + offset, text.c_str() + text.size(), length);
+                length = facet_.length(mb, begin + offset, end, length);
             }
             return text.substr(offset, length);
         }
     private:
-        const std::codecvt<char16_t, char, mbstate_t> &facet_;
+        std::locale locale_;
+        const std::codecvt<char16_t, char, std::mbstate_t> &facet_;
         // 来源:
         // http://www.daemonology.net/blog/2008-06-05-faster-utf8-strlen.html
         static size_t cp_strlen_utf8(const char * _s) {
