@@ -12,7 +12,7 @@ namespace wccs::time {
     public:
         // 可选提供当前参照时间
         explicit cached_clock(std::chrono::milliseconds current =
-            std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch())) {
+            std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())) {
             swap(current);
         }
         // 系统时钟 
