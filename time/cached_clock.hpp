@@ -37,6 +37,17 @@ namespace wccs::time {
 
             diff_ = server - local;
         }
+
+        std::string iso() {
+            std::string buffer(19, '\0');
+            auto now = static_cast<std::chrono::system_clock::time_point>(*this);
+            auto tt = std::chrono::system_clock::to_time_t(now);
+            auto tm = std::localtime(&tt);
+            sprintf(buffer.data(), "%04d-%02d-%02d %02d:%02d:%02d",
+                1900 + tm->tm_year, 1+ tm->tm_mon, tm->tm_mday,
+                tm->tm_hour, tm->tm_min, tm->tm_sec);
+            return buffer;
+        }
     private:
         DIFF_TYPE diff_; // 毫秒
     };
