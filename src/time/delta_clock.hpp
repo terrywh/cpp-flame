@@ -1,29 +1,23 @@
-#ifndef WCCS_TIME_CACHED_CLOCK_H
-#define WCCS_TIME_CACHED_CLOCK_H
-
+#pragma once
 #include <cstdint>
 #include <atomic>
 #include <chrono>
 #include <iostream>
 
-namespace wccs::time {
+namespace flame { namespace time {
+    // 偏移校准时钟
     template <typename DIFF_TYPE = std::atomic_int64_t>
-    class cached_clock {
+    class delta_clock {
     public:
-        // 可选提供当前参照时间
-        explicit cached_clock(std::chrono::milliseconds current =
+        // 构建，可选远端参照时间
+        explicit delta_clock(std::chrono::milliseconds remote =
             std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())) {
-            swap(current);
+            swap(remote);
         }
         // 系统时钟 
         operator std::chrono::system_clock::time_point() const { 
             return std::chrono::system_clock::time_point(
                 std::chrono::milliseconds( static_cast<std::int64_t>(*this) ));
-        }
-        // 时间戳：秒
-        operator std::uint32_t() const {
-            return std::chrono::duration_cast<std::chrono::seconds>(
-                    std::chrono::steady_clock::now().time_since_epoch()).count() + (diff_ / 1000);
         }
         // 时间戳：毫秒
         operator std::int64_t() const {
@@ -31,13 +25,13 @@ namespace wccs::time {
                 std::chrono::steady_clock::now().time_since_epoch()).count() + diff_;
         }
 
-        void swap(std::chrono::milliseconds current = std::chrono::milliseconds(0)) {
+        void swap(std::chrono::milliseconds r) {
             std::int64_t local = std::chrono::duration_cast<std::chrono::milliseconds>( std::chrono::steady_clock::now().time_since_epoch() ).count(),
-                server = std::chrono::duration_cast<std::chrono::milliseconds>( current ).count();
+                remote = std::chrono::duration_cast<std::chrono::milliseconds>( r ).count();
 
-            diff_ = server - local;
+            diff_ = remote - local;
         }
-
+        // 
         std::string iso() {
             std::string buffer(19, '\0');
             auto now = static_cast<std::chrono::system_clock::time_point>(*this);
@@ -51,6 +45,4 @@ namespace wccs::time {
     private:
         DIFF_TYPE diff_; // 毫秒
     };
-}
-
-#endif // WCCS_TIME_CACHED_CLOCK_H
+} }

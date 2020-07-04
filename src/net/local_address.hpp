@@ -1,5 +1,4 @@
-#ifndef WCCS_NET_LOCAL_ADDRESS_H
-#define WCCS_NET_LOCAL_ADDRESS_H
+#pragma once
 
 #include <ifaddrs.h> // getifaddrs / freeifaddrs
 #include <netinet/in.h>
@@ -8,9 +7,9 @@
 #include <cstdint>
 #include <cstring> // std::memcpy
 
-namespace wccs::net {
+namespace flame { namespace net {
     // 获取本地内网地址
-    template <int ADDRESS_FAMILY>
+    template <int ADDRESS_FAMILY = AF_INET>
     class local_address {
     public:
         // 构建并获取本级内网地址
@@ -91,6 +90,4 @@ namespace wccs::net {
             }
         }
     };
-}
-
-#endif // WCCS_NET_LOCAL_ADDRESS_H
+}}
